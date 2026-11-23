@@ -1,0 +1,108 @@
+# Project entry points
+/*
+!/.gitignore
+!/LICENSE
+!/README.md
+!/frontend/
+!/dist/
+/dist/*
+!/dist/biostat-helper-nas/
+
+# Flutter
+frontend/.dart_tool/
+frontend/.packages
+frontend/.pub/
+frontend/build/
+frontend/.flutter-plugins
+frontend/.flutter-plugins-dependencies
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.Python
+.venv/
+venv/
+env/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# NAS runtime data
+dist/biostat-helper-nas/backend/uploads/*
+!dist/biostat-helper-nas/backend/uploads/.gitkeep
+dist/biostat-helper-nas/data/
+dist/biostat-helper-nas/backend/*.db
+
+# Temporary files
+.codex_tmp/
+tmp/
+temp/
+
+# Secrets
+*.pem
+*.key
+*.crt
+ssl/
+
+# Database
+*.sqlite
+*.sqlite3
+*.db
+
+# Local environment, signing, and certificates
+.env
+.env.*
+!.env.example
+*.env
+*.local
+local.properties
+key.properties
+*.keystore
+*.jks
+*.p12
+*.pfx
+*.pkcs12
+
+# Local assistant work and generated outputs
+.agents/
+.claude/
+.codex*/
+.pytest_cache/
+.gradle*/
+.kotlin/
+node_modules/
+build/
+*.apk
+*.aab
+*.zip
+*.tar.gz
+*.log
+
+# Local source material and project data
+*.xlsx
+*.xls
+*.docx
+*.pdf
+*.eml
+*.msg
+*.sqlite*
+*.db-*
+/dist/biostat-helper-nas/videos/
+/dist/biostat-helper-nas/backend/data/
+/dist/biostat-helper-nas/backend/app/static/knowledge/
+/dist/biostat-helper-nas/backend/app/static/thumbnails/
+project_snapshot_*
+project_inventory_*

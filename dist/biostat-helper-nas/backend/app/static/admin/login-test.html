@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>登录自检</title>
+    <style>
+      body {
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        margin: 32px;
+        max-width: 520px;
+      }
+
+      label {
+        display: grid;
+        gap: 6px;
+        margin: 12px 0;
+      }
+
+      input,
+      button,
+      pre {
+        font: inherit;
+      }
+
+      input {
+        padding: 8px 10px;
+      }
+
+      button {
+        padding: 8px 14px;
+      }
+
+      pre {
+        background: #f4f6f8;
+        border: 1px solid #d8dee8;
+        padding: 12px;
+        white-space: pre-wrap;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>登录自检</h1>
+    <p>版本：20260702-auth-debug-4</p>
+    <form id="form">
+      <label>
+        用户名或邮箱
+        <input id="username" autocomplete="username" value="lawrencez1996" />
+      </label>
+      <label>
+        密码
+        <input id="password" autocomplete="current-password" type="password" />
+      </label>
+      <button type="submit">测试登录</button>
+    </form>
+    <pre id="output">等待测试...</pre>
+
+    <script>
+      const output = document.querySelector("#output");
+
+      document.querySelector("#form").addEventListener("submit", async (event) => {
+        event.preventDefault();
+        const username = document.querySelector("#username").value.trim();
+        const password = document.querySelector("#password").value;
+        output.textContent = `提交中...\nusernameLength=${username.length}\npasswordLength=${password.length}`;
+
+        try {
+          const response = await fetch("/api/v1/auth/session", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ username, password }),
+          });
+          const text = await response.text();
+          output.textContent = `HTTP ${response.status}\n${text}`;
+        } catch (error) {
+          output.textContent = String(error && error.stack ? error.stack : error);
+        }
+      });
+    </script>
+  </body>
+</html>

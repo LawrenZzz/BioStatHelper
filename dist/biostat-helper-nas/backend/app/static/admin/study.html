@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>学习清单 · 生统助手</title>
+  <link rel="stylesheet" href="./study.css?v=0.1.62" />
+</head>
+<body>
+  <header><a href="./">返回管理台</a><h1>学习清单</h1><button id="refresh">刷新</button></header>
+  <main>
+    <p id="message" role="status"></p>
+    <section id="stats" class="stats" aria-label="学习统计"></section>
+    <nav id="tabs" aria-label="学习数据视图">
+      <button data-view="lists" aria-pressed="true">学习清单</button>
+      <button data-view="notes" aria-pressed="false">时间点笔记</button>
+      <button data-view="subscriptions" aria-pressed="false">订阅</button>
+      <button data-view="focus" aria-pressed="false">专注记录</button>
+      <button data-view="preferences" aria-pressed="false">偏好设置</button>
+      <button id="export">导出 JSON</button><label class="file">导入 JSON<input type="file" id="import" accept="application/json,.json" /></label>
+    </nav>
+    <section id="lists" class="view">
+      <div class="toolbar"><select id="listFilter" aria-label="学习清单"></select>
+        <button id="newList">新建清单</button><button id="editList">编辑清单</button><button id="deleteList" class="danger">删除清单</button></div>
+      <form id="search" class="toolbar"><input id="query" placeholder="搜索清单内的课程" aria-label="搜索课程" />
+        <select id="status" aria-label="学习状态"><option value="">全部状态</option><option value="planned">未开始</option><option value="learning">学习中</option><option value="completed">已完成</option></select>
+        <select id="sort" aria-label="排序"><option value="sort_order">手动顺序</option><option value="recent">最近观看</option><option value="title">标题</option><option value="duration">时长</option></select><button>筛选</button>
+      </form>
+      <div class="toolbar"><button id="addNas">搜索添加 NAS 视频</button><button id="addBili">添加 B 站课程</button><button id="batchComplete">标记完成</button><button id="batchPlan">标记未开始</button><button id="batchRemove" class="danger">移出清单</button></div>
+      <div class="table-wrap"><table><thead><tr><th><input type="checkbox" id="selectAll" aria-label="全选" /></th><th>课程</th><th>来源</th><th>进度</th><th>状态</th><th>排序</th><th>操作</th></tr></thead><tbody id="items"></tbody></table></div>
+    </section>
+    <section id="notes" class="view" hidden><div id="noteRows"></div></section>
+    <section id="subscriptions" class="view" hidden>
+      <form id="subscriptionFilters" class="toolbar">
+        <select id="subscriptionSource" aria-label="订阅来源"><option value="">全部来源</option><option value="nas">NAS</option><option value="bilibili">B站</option><option value="up">UP主</option><option value="collection">合集</option></select>
+        <label>起始日期<input id="updatesFrom" type="date" /></label><label>截止日期<input id="updatesTo" type="date" /></label>
+        <label><input id="updatesUnread" type="checkbox" />仅未读</label><label><input id="updatesGrouped" type="checkbox" checked />按日期分组（UTC）</label><button>筛选</button>
+      </form>
+      <div class="toolbar"><button id="checkUpdates">检查 NAS 更新</button></div>
+      <div class="toolbar"><label><input id="selectSubscriptions" type="checkbox" />全选订阅</label><button id="subscriptionsPause">暂停</button><button id="subscriptionsResume">恢复</button><button id="subscriptionsRead">全部已读</button><button id="subscriptionsDelete" class="danger">删除订阅</button></div>
+      <div id="subscriptionRows"></div><h2>课程更新</h2>
+      <div class="toolbar"><label><input id="selectUpdates" type="checkbox" />全选更新</label><button id="updatesRead">标记已读</button><button id="updatesUnreadAction">标记未读</button><button id="updatesDelete" class="danger">删除更新</button></div>
+      <div id="updateRows"></div>
+    </section>
+    <section id="focus" class="view" hidden><div id="focusRows"></div></section>
+    <section id="preferences" class="view" hidden>
+      <form id="preferencesForm">
+        <fieldset><legend>学习首页</legend><div id="homeCardRows"></div></fieldset>
+        <fieldset><legend>通知与后台</legend>
+          <label><input id="notificationsEnabled" type="checkbox" />订阅通知</label>
+          <label><input id="backgroundEnabled" type="checkbox" />后台刷新</label>
+        </fieldset>
+        <label>布局<select id="preferenceLayout"><option value="auto">自动</option><option value="compact">紧凑</option><option value="comfortable">宽松</option></select></label>
+        <div class="toolbar"><button id="savePreferences" disabled>保存偏好</button><span id="preferencesStatus" role="status"></span></div>
+      </form>
+    </section>
+  </main>
+  <dialog id="editor"><form id="editorForm"><header><h2 id="editorTitle"></h2><button type="button" id="closeEditor" aria-label="关闭">关闭</button></header><div id="fields"></div><p id="editorError" role="alert"></p><footer><button type="button" id="cancelEditor">取消</button><button id="saveEditor">保存</button></footer></form></dialog>
+  <dialog id="nasPicker"><header><h2>搜索 NAS 视频</h2><button type="button" id="closeNas">关闭</button></header><form id="nasSearch" class="toolbar"><input id="nasQuery" placeholder="视频标题或课程关键词" required /><button>搜索</button></form><p id="nasMessage"></p><div id="nasRows"></div></dialog>
+  <script src="./study.js?v=0.1.62"></script>
+</body></html>

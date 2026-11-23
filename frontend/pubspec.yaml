@@ -1,0 +1,60 @@
+name: bio_stat_helper
+description: 生统助手 - 专为生物统计师设计的学习与资源查阅工具
+publish_to: 'none'
+version: 0.1.67+77
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  
+  # UI & Design
+  cupertino_icons: ^1.0.6
+  google_fonts: ^6.1.0
+  
+  # State Management
+  get: ^4.6.6
+  
+  # Network
+  dio: ^5.4.0
+  crypto: ^3.0.6
+  qr_flutter: ^4.1.0
+  
+  # Video Player
+  video_player: ^2.8.1
+  chewie: ^1.7.1
+  
+  # Storage
+  shared_preferences: ^2.2.2
+  flutter_secure_storage: ^9.0.0
+  path_provider: ^2.1.5
+  
+  # Utils
+  intl: ^0.19.0
+  url_launcher: ^6.2.1
+  cached_network_image: ^3.3.0
+  file_picker: ^9.0.0
+  shimmer: ^3.0.0
+  
+  # Markdown rendering
+  flutter_markdown: ^0.6.18
+  flutter_math_fork: ^0.7.2
+  liquid_glass_widgets: ^1.7.0
+  media_kit: ^1.2.6
+  media_kit_video: ^2.0.1
+  media_kit_libs_android_video: ^1.3.8
+  media_kit_libs_windows_video: ^1.0.9
+
+dependency_overrides:
+  flutter_secure_storage_windows:
+    path: third_party/flutter_secure_storage_windows
+  
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.1
+
+flutter:
+  uses-material-design: true

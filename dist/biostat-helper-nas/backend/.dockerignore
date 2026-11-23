@@ -1,0 +1,16 @@
+.env
+.env.*
+!.env.example
+*.db
+*.db-*
+*.sqlite*
+__pycache__
+**/__pycache__
+*.pyc
+.pytest_cache
+.venv
+venv
+uploads
+tests
+app/static/thumbnails/nas
+data

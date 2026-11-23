@@ -1,0 +1,768 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>生统助手管理台</title>
+    <link rel="stylesheet" href="./styles.css?v=20260707-knowledge-links" />
+  </head>
+  <body>
+    <main class="shell">
+      <section class="topbar">
+        <div>
+          <h1>生统助手管理台</h1>
+          <p>管理知识库、项目待办会议、NAS 视频课程信息和 App 发布状态。</p>
+        </div>
+        <div class="session">
+          <span id="sessionStatus">未登录</span>
+          <button id="logoutButton" class="ghost" type="button">退出</button>
+        </div>
+      </section>
+
+      <section id="loginPanel" class="panel login-panel">
+        <h2>管理员登录</h2>
+        <form id="loginForm" class="form-grid">
+          <label>
+            用户名或邮箱
+            <input id="usernameInput" autocomplete="username" required />
+          </label>
+          <label>
+            密码
+            <input id="passwordInput" type="password" autocomplete="current-password" required />
+          </label>
+          <button type="submit">登录</button>
+        </form>
+        <div id="loginMessageBox" class="message hidden"></div>
+        <p class="build-id">管理台版本：0.1.62-learning-library</p>
+      </section>
+
+      <section id="appPanel" class="hidden">
+        <div class="stats-grid" id="statsGrid"></div>
+
+        <nav class="tabs" aria-label="管理模块">
+          <button class="tab active" type="button" data-tab="knowledge">知识库</button>
+          <button class="tab" type="button" data-tab="projects">项目工作台</button>
+          <button class="tab" type="button" data-tab="videos">NAS 视频库</button>
+          <a class="tab" href="./study.html">学习清单</a>
+        </nav>
+
+        <div id="messageBox" class="message hidden"></div>
+
+        <section id="knowledgePanel" class="panel workspace">
+          <div class="panel-title">
+            <div>
+              <h2>生物统计知识库</h2>
+              <p>维护 App 首页展示的统计概念、DM 数据管理、CDISC、SAS 程序和临床试验知识。</p>
+            </div>
+            <div class="button-row">
+
+              <button id="publishAllConceptsButton" class="ghost" type="button">一键发布</button>
+              <button id="newConceptButton" type="button">新增概念</button>
+            </div>
+          </div>
+
+          <div class="toolbar knowledge-toolbar">
+            <input id="conceptSearchInput" placeholder="搜索标题、摘要或正文" />
+            <select id="conceptCategoryFilter">
+              <option value="">全部分类</option>
+            </select>
+            <select id="conceptPublishedFilter">
+              <option value="">全部状态</option>
+              <option value="true">已发布</option>
+              <option value="false">已隐藏</option>
+            </select>
+            <button id="refreshKnowledgeButton" class="ghost" type="button">刷新</button>
+          </div>
+
+          <div class="knowledge-layout">
+            <aside class="category-list" id="categoryList"></aside>
+            <div class="concept-list" id="conceptList"></div>
+          </div>
+        </section>
+
+        <section id="projectsPanel" class="panel workspace hidden">
+          <div class="panel-title">
+            <div>
+              <h2>统计师 + SP 项目工作台</h2>
+              <p>创建项目后自动生成临床试验标准流程，并统一维护流程待办、会议和智能粘贴解析。</p>
+            </div>
+            <div class="button-row">
+              <button id="newProjectButton" type="button">新建项目</button>
+              <button id="refreshProjectsButton" class="ghost" type="button">刷新</button>
+            </div>
+          </div>
+
+          <div class="project-layout">
+            <aside class="project-list" id="projectList"></aside>
+            <div class="project-detail">
+              <div id="projectEmpty" class="empty-state">
+                <h3>请选择或创建一个项目</h3>
+                <p>项目会包含标准临床试验流程、流程待办和会议列表。</p>
+              </div>
+
+              <div id="projectWorkspace" class="hidden">
+                <div class="project-head">
+                  <div>
+                    <h3 id="activeProjectName"></h3>
+                    <p id="activeProjectMeta"></p>
+                    <p id="activeProjectDescription" class="project-description"></p>
+                  </div>
+                  <div class="button-row">
+                    <button id="editProjectButton" class="ghost" type="button">编辑项目</button>
+                    <button id="deleteProjectButton" class="ghost danger" type="button">删除项目</button>
+                    <button id="seedWorkflowButton" class="ghost" type="button">补齐标准流程</button>
+                    <button id="newProjectPhaseButton" class="ghost" type="button">新增阶段</button>
+                    <button id="newTodoButton" class="ghost" type="button">新增待办</button>
+                    <button id="newMeetingButton" type="button">快捷创建会议</button>
+                  </div>
+                </div>
+
+                <section class="assistant-box">
+                  <textarea id="assistantInput" rows="4" placeholder="粘贴会议通知/会议纪要/会议链接，或输入：明天需要完成ADSL QC"></textarea>
+                  <div class="button-row">
+                    <button id="parseAssistantButton" type="button">智能解析并创建</button>
+                    <button id="clearAssistantButton" class="ghost" type="button">清空</button>
+                  </div>
+                </section>
+
+                <div class="subtabs">
+                  <button class="subtab active" type="button" data-project-tab="standard">标准流程</button>
+                  <button class="subtab" type="button" data-project-tab="meetings">会议列表</button>
+                  <button class="subtab" type="button" data-project-tab="members">项目成员</button>
+                  <button class="subtab" type="button" data-project-tab="timeline">Timeline</button>
+                </div>
+
+                <div id="standardTodos" class="todo-list"></div>
+                <div id="meetingList" class="meeting-list hidden"></div>
+                <div id="memberList" class="member-list hidden"></div>
+                <div id="timelineList" class="timeline-list hidden"></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="videosPanel" class="panel workspace hidden">
+          <div class="panel-title">
+            <div>
+              <h2>NAS 视频库</h2>
+              <p>按文件夹层级自动创建分类树，读取标题数字生成集数，也可手动调整分类、排序和单独添加视频。</p>
+            </div>
+            <div class="button-row">
+              <button id="newVideoCategoryButton" class="ghost" type="button">新增分类</button>
+              <button id="deleteAllVideoCategoriesButton" class="ghost danger" type="button">删除全部分类</button>
+              <button id="manualVideoButton" class="ghost" type="button">手动添加视频</button>
+              <button id="generateThumbnailsButton" class="ghost" type="button">截图当前列表封面</button>
+              <button id="scanSidecarsButton" class="ghost" type="button">搜索字幕/弹幕</button>
+              <button id="reorderVideosButton" class="ghost" type="button">调整当前课程排序</button>
+              <button id="aiOrganizeVideosButton" class="ghost" type="button">AI 整理当前列表</button>
+              <button id="aiOrganizeAllVideosButton" class="ghost" type="button">AI 整理全库</button>
+              <button id="deleteVideoLibraryButton" class="ghost danger" type="button">删除整个视频库记录</button>
+              <button id="scanButton" type="button">扫描视频目录</button>
+            </div>
+          </div>
+
+          <div id="videoProgressPanel" class="progress-panel hidden">
+            <div class="progress-line">
+              <strong id="videoProgressTitle">正在处理视频库</strong>
+              <span id="videoProgressText">0/0</span>
+            </div>
+            <div class="progress-track">
+              <div id="videoProgressBar" class="progress-bar" style="width: 0%"></div>
+            </div>
+          </div>
+
+          <div class="video-category-board">
+            <div class="section-heading">
+              <h3>分类树</h3>
+              <span>点击分类筛选，或编辑分类层级</span>
+            </div>
+            <div id="videoCategoryList" class="video-category-list"></div>
+          </div>
+
+          <div class="toolbar">
+            <input id="searchInput" placeholder="搜索文件名、课程、标题或标签" />
+            <select id="videoCategoryFilter">
+              <option value="">全部分类</option>
+            </select>
+            <select id="publishedFilter">
+              <option value="">全部状态</option>
+              <option value="false">未发布</option>
+              <option value="true">已发布</option>
+            </select>
+            <button id="refreshButton" class="ghost" type="button">刷新</button>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>文件</th>
+                  <th>封面</th>
+                  <th>分类/集数</th>
+                  <th>课程</th>
+                  <th>标题</th>
+                  <th>大小</th>
+                  <th>状态</th>
+                  <th>操作</th>
+                </tr>
+              </thead>
+              <tbody id="videoTableBody"></tbody>
+            </table>
+          </div>
+        </section>
+      </section>
+    </main>
+
+    <dialog id="videoCategoryDialog">
+      <form method="dialog">
+        <div class="dialog-title">
+          <h2 id="videoCategoryDialogTitle">新增视频分类</h2>
+          <button class="icon-button" type="button" data-dialog-close aria-label="关闭">×</button>
+        </div>
+        <input id="videoCategoryEditId" type="hidden" />
+        <div class="form-grid edit-grid">
+          <label>
+            分类名称
+            <input id="videoCategoryName" required />
+          </label>
+          <label>
+            父级分类
+            <select id="videoCategoryParent">
+              <option value="">无父级</option>
+            </select>
+          </label>
+          <label>
+            排序
+            <input id="videoCategorySortOrder" type="number" value="0" />
+          </label>
+          <label class="full">
+            描述
+            <textarea id="videoCategoryDescription" rows="3"></textarea>
+          </label>
+        </div>
+        <div class="dialog-actions">
+          <button id="saveVideoCategoryButton" type="button">保存分类</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog id="manualVideoDialog">
+      <form method="dialog">
+        <div class="dialog-title">
+          <h2>手动添加单独视频</h2>
+          <button class="icon-button" type="button" data-dialog-close aria-label="关闭">×</button>
+        </div>
+        <div class="form-grid edit-grid">
+          <label class="full">
+            相对视频路径
+            <input id="manualVideoPath" placeholder="例如：课程A/第01讲.mp4" required />
+          </label>
+          <label>
+            分类
+            <select id="manualVideoCategory"></select>
+          </label>
+          <label>
+            集数
+            <input id="manualVideoEpisode" type="number" min="0" />
+          </label>
+          <label>
+            显示标题
+            <input id="manualVideoTitle" />
+          </label>
+          <label>
+            课程名称
+            <input id="manualVideoCourseName" />
+          </label>
+          <label class="full">
+            描述
+            <textarea id="manualVideoDescription" rows="4"></textarea>
+          </label>
+        </div>
+        <div class="dialog-actions">
+          <button id="saveManualVideoButton" type="button">添加视频</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog id="projectDialog">
+      <form method="dialog">
+        <div class="dialog-title">
+          <h2 id="projectDialogTitle">新建项目</h2>
+          <button class="icon-button" type="button" data-dialog-close aria-label="关闭">×</button>
+        </div>
+        <input id="projectEditId" type="hidden" />
+        <div class="form-grid edit-grid">
+          <label>
+            项目名称
+            <input id="projectName" required />
+          </label>
+          <label>
+            方案编号
+            <input id="projectProtocolNo" />
+          </label>
+          <label>
+            Sponsor
+            <input id="projectSponsor" />
+          </label>
+          <label>
+            分期
+            <input id="projectPhase" placeholder="Phase II / III" />
+          </label>
+          <label>
+            项目类型
+            <select id="projectType">
+              <option value="drug">药物临床研究</option>
+              <option value="vaccine">疫苗临床研究</option>
+              <option value="medical_device">医疗器械临床研究</option>
+              <option value="diagnostic">诊断试剂/伴随诊断研究</option>
+              <option value="radiopharmaceutical">核药/放射性药物研究</option>
+              <option value="biologic">生物制品临床研究</option>
+              <option value="cell_gene">细胞与基因治疗研究</option>
+              <option value="tcm">中药/天然药物研究</option>
+              <option value="rws">真实世界研究 RWS</option>
+              <option value="iit">研究者发起研究 IIT</option>
+              <option value="observational">观察性研究</option>
+              <option value="be_pk">生物等效性/PK研究</option>
+              <option value="other">其他临床研究</option>
+            </select>
+          </label>
+          <label class="checkbox-row">
+            <input id="projectIsCdisc" type="checkbox" />
+            CDISC 项目（包含 SDTM、ADaM 和提交资料）
+          </label>
+          <label>
+            适应症/治疗领域
+            <input id="projectIndication" />
+          </label>
+          <label>
+            状态
+            <select id="projectStatus">
+              <option value="active">进行中</option>
+              <option value="completed">已结束</option>
+            </select>
+          </label>
+          <label id="projectCreateWorkflowRow" class="checkbox-row">
+            <input id="projectCreateWorkflow" type="checkbox" checked />
+            自动创建标准临床试验流程
+          </label>
+          <div id="projectIntakeRow" class="full assistant-box">
+            <label>
+              项目介绍 / 当前进展（可粘贴给 AI）
+              <textarea id="projectIntakeText" rows="5" placeholder="粘贴项目背景、方案信息、已完成工作和下一步安排，AI 会自动整理项目资料和当前进度。"></textarea>
+            </label>
+            <div class="button-row">
+              <button id="parseProjectIntakeButton" class="ghost" type="button">AI 识别项目与进度</button>
+            </div>
+            <p id="projectIntakePreview" class="form-hint hidden"></p>
+          </div>
+          <label class="full">
+            描述
+            <textarea id="projectDescription" rows="4"></textarea>
+          </label>
+        </div>
+        <div class="dialog-actions">
+          <button id="saveProjectButton" type="button">创建项目</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog id="todoDialog">
+      <form method="dialog">
+        <div class="dialog-title">
+          <h2 id="todoDialogTitle">编辑待办</h2>
+          <button class="icon-button" type="button" data-dialog-close aria-label="关闭">×</button>
+        </div>
+        <input id="todoEditId" type="hidden" />
+        <div class="form-grid edit-grid">
+          <label>
+            标题
+            <input id="todoTitle" required />
+          </label>
+          <label>
+            类型
+            <select id="todoType">
+              <option value="extra">流程待办</option>
+              <option value="standard">标准流程</option>
+              <option value="meeting">会议待办</option>
+            </select>
+          </label>
+          <label>
+            阶段
+            <input id="todoPhase" list="projectPhaseOptions" />
+            <datalist id="projectPhaseOptions"></datalist>
+          </label>
+          <label>
+            状态
+            <select id="todoStatus">
+              <option value="open">未开始</option>
+              <option value="in_progress">进行中</option>
+              <option value="done">已完成</option>
+              <option value="blocked">阻塞</option>
+              <option value="cancelled">取消</option>
+            </select>
+          </label>
+          <label>
+            优先级
+            <select id="todoPriority">
+              <option value="low">低</option>
+              <option value="normal">普通</option>
+              <option value="high">高</option>
+              <option value="urgent">紧急</option>
+            </select>
+          </label>
+          <label>
+            开始日期
+            <input id="todoStartAt" type="datetime-local" />
+          </label>
+          <label>
+            截止时间
+            <input id="todoDueAt" type="datetime-local" />
+          </label>
+          <label class="full">
+            描述
+            <textarea id="todoDescription" rows="4"></textarea>
+          </label>
+        </div>
+        <div class="dialog-actions">
+          <button id="parseTodoDraftButton" class="ghost" type="button">AI解析时间</button>
+          <button id="deleteTodoButton" class="danger ghost" type="button">删除</button>
+          <button id="saveTodoButton" type="button">保存待办</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog id="projectPhaseDialog">
+      <form method="dialog">
+        <div class="dialog-title">
+          <h2 id="projectPhaseDialogTitle">新增阶段</h2>
+          <button class="icon-button" type="button" data-dialog-close aria-label="关闭">×</button>
+        </div>
+        <input id="projectPhaseEditId" type="hidden" />
+        <div class="form-grid">
+          <label>
+            阶段名称
+            <input id="projectPhaseName" required />
+          </label>
+        </div>
+        <div class="dialog-actions">
+          <button id="deleteProjectPhaseButton" class="danger ghost hidden" type="button">删除阶段</button>
+          <button id="saveProjectPhaseButton" type="button">保存阶段</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog id="checklistDialog">
+      <form method="dialog">
+        <div class="dialog-title">
+          <h2 id="checklistDialogTitle">编辑清单项</h2>
+          <button class="icon-button" type="button" data-dialog-close aria-label="关闭">×</button>
+        </div>
+        <input id="checklistEditId" type="hidden" />
+        <input id="checklistTodoId" type="hidden" />
+        <div class="form-grid edit-grid">
+          <label class="full">
+            清单内容
+            <input id="checklistTitle" required />
+          </label>
+          <label>
+            截止时间
+            <input id="checklistDueAt" type="datetime-local" />
+          </label>
+          <label>
+            绑定会议
+            <select id="checklistMeetingId">
+              <option value="">不绑定会议</option>
+            </select>
+          </label>
+          <label class="checkbox-line">
+            <input id="checklistIsDone" type="checkbox" />
+            已完成
+          </label>
+        </div>
+        <div class="dialog-actions">
+          <button id="deleteChecklistButton" class="danger ghost" type="button">删除</button>
+          <button id="saveChecklistButton" type="button">保存清单项</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog id="meetingDialog">
+      <form method="dialog">
+        <div class="dialog-title">
+          <h2 id="meetingDialogTitle">编辑会议</h2>
+          <button class="icon-button" type="button" data-dialog-close aria-label="关闭">×</button>
+        </div>
+        <input id="meetingEditId" type="hidden" />
+        <div class="form-grid edit-grid">
+          <label>
+            会议标题
+            <input id="meetingTitle" required />
+          </label>
+          <label>
+            会议链接
+            <input id="meetingUrl" placeholder="https://..." />
+          </label>
+          <label>
+            开始时间
+            <input id="meetingStartsAt" type="datetime-local" />
+          </label>
+          <label>
+            结束时间
+            <input id="meetingEndsAt" type="datetime-local" />
+          </label>
+          <label>
+            地点
+            <input id="meetingLocation" />
+          </label>
+          <label>
+            参会人
+            <input id="meetingAttendees" />
+          </label>
+          <label>
+            绑定到清单项
+            <select id="meetingChecklistId">
+              <option value="">不绑定清单</option>
+            </select>
+          </label>
+          <label class="full">
+            议程
+            <textarea id="meetingAgenda" rows="4"></textarea>
+          </label>
+          <label class="full">
+            备注
+            <textarea id="meetingNotes" rows="4"></textarea>
+          </label>
+        </div>
+        <div class="dialog-actions">
+          <button id="parseMeetingDraftButton" class="ghost" type="button">AI解析时间</button>
+          <button id="deleteMeetingButton" class="danger ghost" type="button">删除</button>
+          <button id="saveMeetingButton" type="button">保存会议</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog id="memberDialog">
+      <form method="dialog">
+        <div class="dialog-title">
+          <h2 id="memberDialogTitle">添加项目成员</h2>
+          <button class="icon-button" type="button" data-dialog-close aria-label="关闭">×</button>
+        </div>
+        <input id="memberEditId" type="hidden" />
+        <div class="form-grid edit-grid">
+          <label>成员类型
+            <select id="memberType">
+              <option value="sponsor">申办方</option>
+              <option value="statistical_partner">合作统计方</option>
+              <option value="internal">内部团队</option>
+              <option value="other">其他</option>
+            </select>
+          </label>
+          <label>姓名<input id="memberName" required /></label>
+          <label>组织/公司<input id="memberOrganization" /></label>
+          <label>职责<input id="memberRole" /></label>
+          <label>邮箱<input id="memberEmail" type="email" /></label>
+          <label>电话<input id="memberPhone" /></label>
+          <label class="full">备注<textarea id="memberNotes" rows="3"></textarea></label>
+        </div>
+        <div class="dialog-actions">
+          <button id="deleteMemberButton" class="danger ghost" type="button">删除</button>
+          <button id="saveMemberButton" type="button">保存成员</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog id="memberTextDialog">
+      <form method="dialog">
+        <div class="dialog-title">
+          <h2>AI 识别项目成员</h2>
+          <button class="icon-button" type="button" data-dialog-close aria-label="关闭">×</button>
+        </div>
+        <label class="full">粘贴成员信息
+          <textarea id="memberText" rows="9" placeholder="例如：申办方 广东某某药业：张三（项目经理，zhang@example.com）；内部团队：李四（统计师）"></textarea>
+        </label>
+        <div class="dialog-actions">
+          <button id="parseMemberTextButton" type="button">识别并保存</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog id="timelineTextDialog">
+      <form method="dialog">
+        <div class="dialog-title">
+          <h2>导入文字 Timeline</h2>
+          <button class="icon-button" type="button" data-dialog-close aria-label="关闭">×</button>
+        </div>
+        <label class="full">粘贴 Timeline
+          <textarea id="timelineText" rows="11" placeholder="每行一个任务，也支持制表符、逗号或竖线分隔的表格文本"></textarea>
+        </label>
+        <div class="dialog-actions">
+          <button id="importTimelineTextButton" type="button">解析并导入</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog id="timelineItemDialog">
+      <form method="dialog">
+        <div class="dialog-title">
+          <h2>编辑 Timeline 事项</h2>
+          <button class="icon-button" type="button" data-dialog-close aria-label="关闭">×</button>
+        </div>
+        <input id="timelineItemId" type="hidden" />
+        <div class="form-grid edit-grid">
+          <label class="full">事项标题<input id="timelineItemTitle" required /></label>
+          <label class="full">绑定任务或清单
+            <select id="timelineItemTarget"></select>
+          </label>
+          <label>开始时间<input id="timelineItemStartAt" type="datetime-local" /></label>
+          <label>截止时间<input id="timelineItemDueAt" type="datetime-local" /></label>
+        </div>
+        <div class="dialog-actions">
+          <button id="saveTimelineItemButton" type="button">保存并同步</button>
+        </div>
+      </form>
+    </dialog>
+
+    <input id="timelineFileInput" type="file" accept=".xlsx,.xls,.xlsm,.csv,.tsv,.txt" hidden />
+
+    <dialog id="conceptDialog">
+      <form id="conceptForm" method="dialog">
+        <div class="dialog-title">
+          <h2 id="conceptDialogTitle">编辑概念</h2>
+          <button class="icon-button" type="button" data-dialog-close aria-label="关闭">×</button>
+        </div>
+
+        <input id="conceptEditId" type="hidden" />
+        <div class="form-grid concept-edit-grid">
+          <label>
+            标题
+            <input id="conceptTitle" required />
+          </label>
+          <label>
+            分类
+            <select id="conceptCategory" required></select>
+          </label>
+          <label class="full">
+            摘要
+            <textarea id="conceptSummary" rows="3"></textarea>
+          </label>
+          <label class="full">
+            正文 Markdown
+            <textarea id="conceptContent" rows="12" required></textarea>
+          </label>
+          <label class="full">
+            标签
+            <input id="conceptTags" placeholder="用逗号分隔，例如：SAP, TFL, 临床试验" />
+          </label>
+          <label class="full">
+            公式 JSON
+            <textarea id="conceptFormulas" rows="5" placeholder='[{"name":"公式名","expression":"...","description":"...","variables":[]}]'></textarea>
+          </label>
+          <label class="full">
+            示例 JSON
+            <textarea id="conceptExamples" rows="5" placeholder='[{"title":"示例","description":"...","solution":"...","result":"..."}]'></textarea>
+          </label>
+          <label class="checkbox-row full">
+            <input id="conceptPublished" type="checkbox" checked />
+            App 可见
+          </label>
+        </div>
+
+        <div class="dialog-actions">
+          <button id="deleteConceptButton" class="danger ghost" type="button">删除</button>
+          <button id="saveConceptButton" type="button">保存概念</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog id="videoReorderDialog">
+      <form method="dialog" class="video-reorder-dialog">
+        <div class="dialog-title">
+          <h2>调整视频顺序</h2>
+          <button class="icon-button" type="button" data-dialog-close aria-label="关闭">×</button>
+        </div>
+        <p class="form-hint">拖动视频到目标位置后保存。此操作只调整数据库中的展示顺序，不会移动或重命名 NAS 本地文件。</p>
+        <ol id="videoReorderList" class="video-reorder-list"></ol>
+        <div class="dialog-actions">
+          <button id="saveVideoReorderButton" type="button">保存排序</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog id="editDialog">
+      <form id="editForm" method="dialog">
+        <div class="dialog-title">
+          <h2>编辑视频信息</h2>
+          <button class="icon-button" type="button" data-dialog-close aria-label="关闭">×</button>
+        </div>
+
+        <input id="editId" type="hidden" />
+        <div class="form-grid edit-grid">
+          <label>
+            显示标题
+            <input id="editTitle" />
+          </label>
+          <label>
+            课程名称
+            <input id="editCourseName" />
+          </label>
+          <label>
+            课程标题
+            <input id="editCourseTitle" />
+          </label>
+          <label>
+            课时标题
+            <input id="editLessonTitle" />
+          </label>
+          <label>
+            视频分类
+            <select id="editVideoCategory"></select>
+          </label>
+          <label>
+            集数
+            <input id="editEpisodeNumber" type="number" min="0" />
+          </label>
+          <label>
+            排序
+            <input id="editSortOrder" type="number" />
+          </label>
+          <label>
+            讲师
+            <input id="editInstructor" />
+          </label>
+          <label>
+            标签
+            <input id="editTags" placeholder="用逗号分隔" />
+          </label>
+          <label>
+            时长（秒）
+            <input id="editDuration" type="number" min="0" />
+          </label>
+          <label class="checkbox-row">
+            <input id="editVisible" type="checkbox" />
+            App 可见
+          </label>
+          <div class="thumbnail-editor full">
+            <div id="editThumbnailPreview" class="video-thumb large">
+              <span>未生成封面</span>
+            </div>
+            <div>
+              <button id="generateEditThumbnailButton" class="ghost" type="button">从视频截图生成封面</button>
+              <p class="form-hint">默认截取第 5 秒画面，保存后已发布视频会同步更新 App 封面。</p>
+            </div>
+          </div>
+          <label class="full">
+            描述
+            <textarea id="editDescription" rows="5"></textarea>
+          </label>
+        </div>
+
+        <div class="dialog-actions">
+          <button id="publishButton" class="ghost" type="button">保存并发布</button>
+          <button id="saveButton" type="button">保存</button>
+        </div>
+      </form>
+    </dialog>
+
+    <script src="./app.js?v=20261020-learning-library-v1"></script>
+  </body>
+</html>
